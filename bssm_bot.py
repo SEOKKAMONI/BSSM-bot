@@ -13,7 +13,7 @@ day_number = datetime.datetime.today().weekday()
 
 client = discord.Client()
 
-token = 'ODgxNTM4MzQ4MjM2MzAwMzUx.G2x8MS.sIeyii3crsbpzbDBT4QiykWRZepMkXPRAbgjfg'
+token = '토큰'
 
 header = {'User-agent' : 'Mozila/2.0'}
 response = requests.get("https://bssm.kro.kr/meal" , header)
