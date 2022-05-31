@@ -1,11 +1,14 @@
 from ast import Subscript
 from pydoc import describe
 from this import d
+from xml.dom.expatbuilder import FragmentBuilderNS
 import discord
 import requests
 from bs4 import BeautifulSoup
 import datetime
 import json
+from urllib.parse import quote_plus
+from selenium import webdriver
 
 days =['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
 
@@ -27,7 +30,7 @@ meal_menus = soup.select('.meal_menu')
 check_menu = soup.select_one('.meal_menu') # 메뉴가 있는지 없는지 체크하기위해 공휴일 일수도 있으니깐
 
 # 부산소프트웨어마이스터고 각종대회정보 
-response1 = requests.get("https://school.busanedu.net/bssm-h/na/ntt/selectNttList.do?mi=1040046&bbsId=5156419",verify=False)
+response1 = requests.get("https://school.busanedu.net/bssm-h/na/ntt/selectNttList.do?mi=1040046&bbsId=5156419" , verify=False)       
 html1 = response1.text
 soup1 = BeautifulSoup(html1, 'html.parser')
 
@@ -42,6 +45,12 @@ day_checks = soup2.select(".dday_txt")
 items = soup2.select(".item_list")
 dates = soup2.select(".cm_date")
 
+# 구글링 google.com'
+baseUrl = 'https://www.google.com/search?q=' # baseURL
+options = webdriver.ChromeOptions()
+# 창 숨기는 옵션 추가
+options.add_argument("headless")
+
 # 날짜
 y_m_d = datetime.datetime.today().strftime('%Y년 %m월 %d일 {}'.format(days[day_number]))
 
@@ -55,8 +64,9 @@ async def on_message(message):
         embed = discord.Embed(title="🟢 도움말 🟢", description="봇 사용법을 알려줍니다 !!", color=0x008000)
         embed.add_field(name="!급식표", value="아침, 점심, 저녁으로 급식정보를 알려줍니다.", inline=False)
         embed.add_field(name="!시간표 X학년X반", value="ex) !시간표 1학년 2반\n 해당 시간표가 보여집니다.", inline=False) # https://github.com/SEOKKAMONI       
-        embed.set_footer(text="Bot Made by. 김석진 #9335", icon_url="https://search.pstatic.net/common/?src=http%3A%2F%2Fcafefiles.naver.net%2FMjAyMDAzMzBfMTM1%2FMDAxNTg1NDk1NDg0MzQ0.3gAtZonNGC6GDOgJ2HWFVE5haE2zZ1A9mCmCmUA8UUgg.IaR5OGJcNDv4hYK_UR4EKzbj_zmN_mpCK20atEmgUDUg.JPEG%2F97409BAF-76F7-48C9-97F8-8F70804E6FD6.jpeg&type=sc960_832")
         embed.add_field(name="!대회정보", value="부산소프트웨어마이스터고 사이트 각종 대회 정보에서 가져온\n 데이터로 대회정보를 알려줍니다.", inline=False)
+        embed.add_field(name="!검색 검색할정보입력", value="ex) !검색 파이썬\n구글에서 검색한 정보가 나옵니다.\n하지만 속도가 조금 느릴수있습니다.", inline=False)
+        embed.set_footer(text="Bot Made by. 김석진 #9335", icon_url="https://search.pstatic.net/common/?src=http%3A%2F%2Fcafefiles.naver.net%2FMjAyMDAzMzBfMTM1%2FMDAxNTg1NDk1NDg0MzQ0.3gAtZonNGC6GDOgJ2HWFVE5haE2zZ1A9mCmCmUA8UUgg.IaR5OGJcNDv4hYK_UR4EKzbj_zmN_mpCK20atEmgUDUg.JPEG%2F97409BAF-76F7-48C9-97F8-8F70804E6FD6.jpeg&type=sc960_832")
         await message.channel.send(embed=embed)
     elif message.content.startswith('!급식표'):
         if(days[day_number] != '토요일' and days[day_number] != '일요일' and check_menu != "급식이 없습니다."): # 토요일이나 일요일 혹은 급식이 없으면 공휴일로 판별함
@@ -72,7 +82,7 @@ async def on_message(message):
 
     elif message.content.startswith('!대회정보'):
         count = 0
-        embed = discord.Embed(title="🔎 각종 대회 정보 🔎", color=0x008000) # 부소마 사이트에서 크롤링함
+        embed = discord.Embed(title="📰 각종 대회 정보 📰", color=0x008000) # 부소마 사이트에서 크롤링함
         for competition in competitions:
             if(count != 5):
                 title = competition.text.strip()
@@ -104,4 +114,31 @@ async def on_message(message):
             embed.set_image(url = "https://postfiles.pstatic.net/MjAyMjA1MjlfMjM5/MDAxNjUzODI2Mjc2OTg5.fxZdsZmhlUNv0cRqFtrgZ9ewFXhuG4BcYNWiGD4CuaQg.piVcyu1hkxQF_gVjiYW9ZiaN1h5ah-Kr4OUXkhP8Ij8g.JPEG.sj060706/1%ED%95%99%EB%85%844%EB%B0%98.jpg?type=w773")
             embed.set_footer(text="Bot Made by. 김석진 #9335", icon_url="https://search.pstatic.net/common/?src=http%3A%2F%2Fcafefiles.naver.net%2FMjAyMDAzMzBfMTM1%2FMDAxNTg1NDk1NDg0MzQ0.3gAtZonNGC6GDOgJ2HWFVE5haE2zZ1A9mCmCmUA8UUgg.IaR5OGJcNDv4hYK_UR4EKzbj_zmN_mpCK20atEmgUDUg.JPEG%2F97409BAF-76F7-48C9-97F8-8F70804E6FD6.jpeg&type=sc960_832")
             await message.channel.send(embed=embed)
+    elif message.content.startswith("!검색"):
+        search_word = message.content.replace("!검색 ", "")
+        search = message.content.replace(" ", "")
+        url = baseUrl + quote_plus(search_word)
+        #quote_plus : 문자열을 인터넷 검색가능한 형식으로 바꿔준다.
+
+        driver = webdriver.Chrome('./chromedriver.exe',options=options) # chrome driver를 불러와줌
+        driver.get(url)
+
+        html3 = driver.page_source
+        soup3 = BeautifulSoup(html3)
+        # 검색 했을 때 제목과 breadcrumbs, 접속주소를 가져올 것이다.
+
+        titles_1 = soup3.select("a > .LC20lb")
+        links_2 = soup3.select(".yuRUbf > a")
+        embed = discord.Embed(title=f"🔎 Google \"{search_word}\" 에 대한 검색 정보 🔎", color=0x008000)
+        count = 1
+        for title,link in zip(titles_1,links_2):
+            if(count != 6):
+                google_title = title.text
+                google_link = link.attrs['href']
+                embed.add_field(name=f"{count}. {google_title}", value=f"링크 바로가기: {google_link}", inline=False)
+                count += 1
+        await message.channel.send(embed=embed)
+        
+
+        
 client.run(token)
