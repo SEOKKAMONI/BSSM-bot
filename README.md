@@ -22,4 +22,4 @@
 <pre>!검색 [원하는 검색어]</pre>
 <h4>디스코드 채팅방에 " !검색 [원하는 검색어] " 을 입력하면 크롬드라이버가 구글에서 검색을 하여<br>
     URL과 제목을 가져옵니다 단점은 크롬드라이버를 이용하여 느리다는 단점이있습니다.</h4>
-<img src="https://media.discordapp.net/attachments/994402201768300587/994428049749721189/unknown.png"?width=518&height=410?width=490&height=410">
+<img src="https://media.discordapp.net/attachments/994402201768300587/994420214357819462/unknown.png">
